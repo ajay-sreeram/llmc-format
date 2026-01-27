@@ -1,0 +1,60 @@
+{
+  "scopeName": "text.html.markdown.llmc",
+  "name": "LLMC",
+  "patterns": [
+    { "include": "#frontmatter" },
+    { "include": "#role-header" },
+    { "include": "#thinking-block" },
+    { "include": "#tool-use-block" },
+    { "include": "#tool-result-block" },
+    { "include": "text.html.markdown" }
+  ],
+  "repository": {
+    "frontmatter": {
+      "name": "meta.embedded.block.frontmatter.llmc",
+      "begin": "\\A(---)\\s*$",
+      "end": "^(---)\\s*$",
+      "beginCaptures": { "1": { "name": "punctuation.definition.frontmatter.begin.llmc" } },
+      "endCaptures": { "1": { "name": "punctuation.definition.frontmatter.end.llmc" } },
+      "patterns": [
+        { "include": "source.yaml" }
+      ]
+    },
+    "role-header": {
+      "name": "markup.heading.2.llmc",
+      "match": "^(##)\\s+(system|user|assistant)\\s*$",
+      "captures": {
+        "1": { "name": "punctuation.definition.heading.llmc" },
+        "2": { "name": "entity.name.type.role.llmc" }
+      }
+    },
+    "thinking-block": {
+      "name": "meta.embedded.block.thinking.llmc",
+      "begin": "^(```)thinking\\s*$",
+      "end": "^(```)\\s*$",
+      "beginCaptures": { "1": { "name": "punctuation.definition.code.fence.begin.llmc" } },
+      "endCaptures": { "1": { "name": "punctuation.definition.code.fence.end.llmc" } },
+      "contentName": "markup.italic.thinking.llmc"
+    },
+    "tool-use-block": {
+      "name": "meta.embedded.block.tool-use.llmc",
+      "begin": "^(```)tool_use\\s*$",
+      "end": "^(```)\\s*$",
+      "beginCaptures": { "1": { "name": "punctuation.definition.code.fence.begin.llmc" } },
+      "endCaptures": { "1": { "name": "punctuation.definition.code.fence.end.llmc" } },
+      "patterns": [
+        { "include": "source.json" }
+      ]
+    },
+    "tool-result-block": {
+      "name": "meta.embedded.block.tool-result.llmc",
+      "begin": "^(```)tool_result\\s*$",
+      "end": "^(```)\\s*$",
+      "beginCaptures": { "1": { "name": "punctuation.definition.code.fence.begin.llmc" } },
+      "endCaptures": { "1": { "name": "punctuation.definition.code.fence.end.llmc" } },
+      "patterns": [
+        { "include": "source.json" }
+      ]
+    }
+  }
+}

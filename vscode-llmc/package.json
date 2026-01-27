@@ -1,0 +1,53 @@
+{
+  "name": "vscode-llmc",
+  "displayName": "LLMC File Viewer",
+  "description": "Syntax highlighting and rendered chat preview for .llmc files",
+  "version": "0.1.0",
+  "publisher": "llmc",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/placeholder/vscode-llmc"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": ["Programming Languages"],
+  "activationEvents": [
+    "onLanguage:llmc"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "llmc",
+        "aliases": ["LLMC", "llmc"],
+        "extensions": [".llmc"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "llmc",
+        "scopeName": "text.html.markdown.llmc",
+        "path": "./syntaxes/llmc.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "llmc.openPreview",
+        "title": "LLMC: Open Preview"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "marked": "^12.0.0"
+  }
+}
