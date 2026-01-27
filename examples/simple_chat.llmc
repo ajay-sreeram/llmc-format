@@ -1,0 +1,16 @@
+---
+model: claude-opus-4-5-20251101
+timestamp: 2026-01-27T10:00:00Z
+---
+
+## system
+
+You are a helpful assistant.
+
+## user
+
+What is the capital of France?
+
+## assistant
+
+The capital of France is **Paris**.
