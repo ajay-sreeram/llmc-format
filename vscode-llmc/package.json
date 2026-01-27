@@ -3,10 +3,10 @@
   "displayName": "LLMC File Viewer",
   "description": "Syntax highlighting and rendered chat preview for .llmc files",
   "version": "0.1.0",
-  "publisher": "llmc",
+  "publisher": "sreeramajay",
   "repository": {
     "type": "git",
-    "url": "https://github.com/placeholder/vscode-llmc"
+    "url": "https://github.com/ajay-sreeram/llmc-format"
   },
   "engines": {
     "vscode": "^1.80.0"

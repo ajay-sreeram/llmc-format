@@ -35,6 +35,25 @@ llmc validate examples/thinking_chat.llmc
 llmc convert messages.json
 ```
 
+## VS Code Extension
+
+The [LLMC File Viewer](https://marketplace.visualstudio.com/items?itemName=sreeramajay.vscode-llmc) extension provides syntax highlighting and a rendered chat preview for `.llmc` files.
+
+### Install
+
+Search for **"LLMC File Viewer"** in the VS Code Extensions panel, or:
+
+```bash
+code --install-extension sreeramajay.vscode-llmc
+```
+
+### Features
+
+- Syntax highlighting for `.llmc` files (YAML frontmatter, role headers, thinking/tool blocks, Markdown body)
+- **LLMC: Open Preview** command — renders the chat as a styled webview with role-labeled cards, collapsible thinking blocks, and tool blocks
+- Auto-updates preview on file save
+- Respects VS Code dark/light theme
+
 ## Format
 
 See [SPEC.md](SPEC.md) for the full specification.
