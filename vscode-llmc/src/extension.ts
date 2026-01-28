@@ -236,44 +236,82 @@ function getWebviewContent(chat: Chat, cssUri: vscode.Uri): string {
 <link rel="stylesheet" href="${cssUri}">
 </head><body>`;
 
-  // Metadata
+  // Metadata bar
   if (Object.keys(chat.metadata).length > 0) {
     html += `<div class="metadata">`;
     for (const [k, v] of Object.entries(chat.metadata)) {
-      html += `<div><strong>${esc(k)}:</strong> ${esc(String(v))}</div>`;
+      html += `<span><span class="label">${esc(k)}:</span> ${esc(String(v))}</span>`;
     }
     html += `</div>`;
   }
 
   // Messages
+  html += `<div class="messages">`;
   for (const msg of chat.messages) {
-    html += `<div class="message-card role-${msg.role}">`;
-    html += `<div class="role-header">${esc(msg.role)}</div>`;
-    html += `<div class="body">`;
+    html += `<div class="message role-${msg.role}">`;
+    html += `<div class="role">${getRoleIcon(msg.role)} ${esc(msg.role)}</div>`;
+    html += `<div class="content">`;
+
     for (const block of msg.blocks) {
       if (block.type === 'thinking') {
-        // Render thinking content as markdown inside collapsible
         const renderedThinking = marked.parse(block.text) as string;
-        html += `<details class="thinking-block"><summary>Thinking...</summary>
-          <div class="thinking-content">${renderedThinking}</div></details>`;
+        html += `<details class="thinking">
+          <summary>Thinking</summary>
+          <div class="thinking-body">${renderedThinking}</div>
+        </details>`;
       } else if (block.type === 'tool_use') {
-        const label = block.name ? `Tool: ${esc(block.name)}` : 'Tool Use';
-        const idInfo = block.id ? ` <span class="tool-id">(${esc(block.id)})</span>` : '';
-        html += `<div class="tool-block tool-use"><div class="tool-label">${label}${idInfo}</div><pre>${esc(block.text)}</pre></div>`;
+        const name = block.name || 'tool';
+        const id = block.id ? esc(block.id) : '';
+        html += `<div class="tool tool-use">
+          <div class="tool-header">
+            <span class="tool-icon">→</span>
+            <span class="tool-name">${esc(name)}</span>
+            ${id ? `<span class="tool-id">${id}</span>` : ''}
+          </div>
+          <div class="tool-body">${formatJson(block.text)}</div>
+        </div>`;
       } else if (block.type === 'tool_result') {
-        const label = block.isError ? 'Tool Error' : 'Tool Result';
-        const idInfo = block.id ? ` <span class="tool-id">(${esc(block.id)})</span>` : '';
         const errorClass = block.isError ? ' tool-error' : '';
-        html += `<div class="tool-block tool-result${errorClass}"><div class="tool-label">${label}${idInfo}</div><pre>${esc(block.text)}</pre></div>`;
+        const icon = block.isError ? '✗' : '←';
+        const label = block.isError ? 'error' : 'result';
+        const id = block.id ? esc(block.id) : '';
+        html += `<div class="tool tool-result${errorClass}">
+          <div class="tool-header">
+            <span class="tool-icon">${icon}</span>
+            <span class="tool-name">${label}</span>
+            ${id ? `<span class="tool-id">${id}</span>` : ''}
+          </div>
+          <div class="tool-body">${formatJson(block.text)}</div>
+        </div>`;
       } else {
-        html += marked.parse(block.text) as string;
+        html += `<div class="text">${marked.parse(block.text) as string}</div>`;
       }
     }
+
     html += `</div></div>`;
   }
+  html += `</div>`;
 
   html += `</body></html>`;
   return html;
+}
+
+function getRoleIcon(role: string): string {
+  switch (role) {
+    case 'system': return '⚙';
+    case 'user': return '●';
+    case 'assistant': return '◆';
+    default: return '○';
+  }
+}
+
+function formatJson(text: string): string {
+  try {
+    const parsed = JSON.parse(text.trim());
+    return esc(JSON.stringify(parsed, null, 2));
+  } catch {
+    return esc(text);
+  }
 }
 
 function esc(s: string): string {

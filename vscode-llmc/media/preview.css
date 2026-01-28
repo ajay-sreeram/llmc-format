@@ -1,154 +1,286 @@
+/* VS Code themed LLMC preview */
+:root {
+  --message-gap: 16px;
+  --block-radius: 4px;
+}
+
 body {
   font-family: var(--vscode-font-family);
   font-size: var(--vscode-font-size);
+  line-height: 1.5;
   color: var(--vscode-foreground);
   background: var(--vscode-editor-background);
-  padding: 16px;
+  padding: 16px 20px;
   margin: 0;
 }
 
+/* Metadata - subtle top bar */
 .metadata {
-  background: var(--vscode-textBlockQuote-background);
-  border-left: 3px solid var(--vscode-textBlockQuote-border);
+  display: flex;
+  gap: 16px;
   padding: 8px 12px;
-  margin-bottom: 16px;
-  font-size: 0.9em;
-  opacity: 0.8;
+  margin-bottom: 20px;
+  background: var(--vscode-titleBar-activeBackground);
+  border-radius: var(--block-radius);
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
 }
 
-.message-card {
-  border: 1px solid var(--vscode-panel-border);
-  border-radius: 6px;
-  margin-bottom: 12px;
-  overflow: hidden;
-}
-
-.message-card .role-header {
-  padding: 6px 12px;
-  font-weight: bold;
-  text-transform: uppercase;
-  font-size: 0.8em;
-  letter-spacing: 0.05em;
-}
-
-.role-system .role-header {
-  background: var(--vscode-editorInfo-foreground);
-  color: var(--vscode-editor-background);
-}
-
-.role-user .role-header {
-  background: var(--vscode-editorWarning-foreground);
-  color: var(--vscode-editor-background);
-}
-
-.role-assistant .role-header {
-  background: var(--vscode-editorHint-foreground, var(--vscode-foreground));
-  color: var(--vscode-editor-background);
-}
-
-.message-card .body {
-  padding: 10px 12px;
-}
-
-/* Thinking blocks */
-.thinking-block {
-  border: 1px dashed var(--vscode-editorInfo-foreground);
-  border-radius: 4px;
-  margin: 8px 0;
-  overflow: hidden;
-}
-
-.thinking-block summary {
-  cursor: pointer;
-  padding: 6px 10px;
-  font-style: italic;
-  opacity: 0.7;
-  font-size: 0.9em;
-  background: var(--vscode-textBlockQuote-background);
-}
-
-.thinking-block .thinking-content {
-  padding: 8px 10px;
-  opacity: 0.85;
-  border-top: 1px dashed var(--vscode-editorInfo-foreground);
-  background: var(--vscode-textBlockQuote-background);
-}
-
-/* Allow markdown rendering inside thinking */
-.thinking-block .thinking-content pre {
-  margin: 8px 0;
-}
-
-.thinking-block .thinking-content code {
-  font-size: 0.9em;
-}
-
-/* Tool blocks */
-.tool-block {
-  background: var(--vscode-textCodeBlock-background);
-  border-radius: 4px;
-  margin: 8px 0;
-  overflow: hidden;
-}
-
-.tool-block .tool-label {
-  font-weight: bold;
-  padding: 6px 10px;
-  background: rgba(128, 128, 128, 0.1);
-  border-bottom: 1px solid var(--vscode-panel-border);
-  font-size: 0.85em;
+.metadata span {
   display: flex;
   align-items: center;
+  gap: 4px;
+}
+
+.metadata .label {
+  opacity: 0.7;
+}
+
+/* Messages container */
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--message-gap);
+}
+
+/* Message block */
+.message {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
-.tool-block .tool-id {
-  font-weight: normal;
-  opacity: 0.6;
-  font-size: 0.9em;
-  font-family: var(--vscode-editor-fontFamily);
+/* Role label - minimal pill style */
+.role {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  width: fit-content;
 }
 
-.tool-block pre {
-  margin: 0;
-  padding: 8px 10px;
-  font-family: var(--vscode-editor-fontFamily);
-  font-size: 0.9em;
-  white-space: pre-wrap;
-  overflow-x: auto;
-  background: transparent;
+.role-system .role {
+  background: var(--vscode-badge-background);
+  color: var(--vscode-badge-foreground);
 }
 
-/* Tool use styling */
-.tool-use .tool-label {
-  color: var(--vscode-editorInfo-foreground);
+.role-user .role {
+  background: var(--vscode-inputValidation-infoBackground);
+  color: var(--vscode-inputValidation-infoForeground, var(--vscode-foreground));
+  border: 1px solid var(--vscode-inputValidation-infoBorder, transparent);
 }
 
-/* Tool result styling */
-.tool-result .tool-label {
-  color: var(--vscode-editorHint-foreground, var(--vscode-foreground));
+.role-assistant .role {
+  background: var(--vscode-inputValidation-warningBackground);
+  color: var(--vscode-inputValidation-warningForeground, var(--vscode-foreground));
+  border: 1px solid var(--vscode-inputValidation-warningBorder, transparent);
 }
 
-/* Tool error styling */
-.tool-error {
-  border: 1px solid var(--vscode-editorError-foreground);
+/* Message content */
+.content {
+  padding-left: 4px;
 }
 
-.tool-error .tool-label {
-  color: var(--vscode-editorError-foreground);
-  background: rgba(255, 0, 0, 0.1);
+.content > *:first-child {
+  margin-top: 0;
 }
 
-/* Standard code styling */
-code {
+.content > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Thinking block - tree-like collapsible */
+.thinking {
+  margin: 8px 0;
+  border-left: 2px solid var(--vscode-textLink-foreground);
+  background: var(--vscode-textBlockQuote-background);
+  border-radius: 0 var(--block-radius) var(--block-radius) 0;
+}
+
+.thinking summary {
+  cursor: pointer;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--vscode-textLink-foreground);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.thinking summary::before {
+  content: "▶";
+  font-size: 10px;
+  transition: transform 0.1s;
+}
+
+.thinking[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.thinking summary:hover {
+  background: var(--vscode-list-hoverBackground);
+}
+
+.thinking-body {
+  padding: 12px;
+  border-top: 1px solid var(--vscode-panel-border);
+  color: var(--vscode-descriptionForeground);
+}
+
+.thinking-body pre {
   background: var(--vscode-textCodeBlock-background);
-  padding: 1px 4px;
+  padding: 12px;
+  border-radius: var(--block-radius);
+  overflow-x: auto;
+  margin: 8px 0;
+}
+
+.thinking-body code {
+  font-family: var(--vscode-editor-fontFamily);
+  font-size: 13px;
+}
+
+/* Tool blocks - terminal style */
+.tool {
+  margin: 8px 0;
+  border-radius: var(--block-radius);
+  overflow: hidden;
+  border: 1px solid var(--vscode-panel-border);
+}
+
+.tool-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--vscode-sideBarSectionHeader-background);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.tool-icon {
+  font-size: 14px;
+}
+
+.tool-name {
+  color: var(--vscode-symbolIcon-functionForeground, var(--vscode-foreground));
+}
+
+.tool-id {
+  color: var(--vscode-descriptionForeground);
+  font-family: var(--vscode-editor-fontFamily);
+  font-size: 11px;
+  margin-left: auto;
+}
+
+.tool-body {
+  padding: 10px 12px;
+  background: var(--vscode-textCodeBlock-background);
+  font-family: var(--vscode-editor-fontFamily);
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Tool use - blue accent */
+.tool-use {
+  border-color: var(--vscode-textLink-foreground);
+}
+
+.tool-use .tool-header {
+  border-bottom: 1px solid var(--vscode-textLink-foreground);
+}
+
+.tool-use .tool-icon {
+  color: var(--vscode-textLink-foreground);
+}
+
+/* Tool result - green accent */
+.tool-result {
+  border-color: var(--vscode-testing-iconPassed, #4caf50);
+}
+
+.tool-result .tool-header {
+  border-bottom: 1px solid var(--vscode-testing-iconPassed, #4caf50);
+}
+
+.tool-result .tool-icon {
+  color: var(--vscode-testing-iconPassed, #4caf50);
+}
+
+/* Tool error - red accent */
+.tool-error {
+  border-color: var(--vscode-testing-iconFailed, #f44336);
+}
+
+.tool-error .tool-header {
+  border-bottom: 1px solid var(--vscode-testing-iconFailed, #f44336);
+  background: var(--vscode-inputValidation-errorBackground);
+}
+
+.tool-error .tool-icon {
+  color: var(--vscode-testing-iconFailed, #f44336);
+}
+
+/* Text content - markdown */
+.text p {
+  margin: 8px 0;
+}
+
+.text ul, .text ol {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.text code {
+  font-family: var(--vscode-editor-fontFamily);
+  font-size: 13px;
+  background: var(--vscode-textCodeBlock-background);
+  padding: 2px 6px;
   border-radius: 3px;
 }
 
-pre {
+.text pre {
   background: var(--vscode-textCodeBlock-background);
-  padding: 10px;
-  border-radius: 4px;
+  padding: 12px;
+  border-radius: var(--block-radius);
   overflow-x: auto;
+  margin: 12px 0;
+}
+
+.text pre code {
+  padding: 0;
+  background: none;
+}
+
+.text strong {
+  font-weight: 600;
+}
+
+.text blockquote {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-left: 3px solid var(--vscode-textBlockQuote-border);
+  background: var(--vscode-textBlockQuote-background);
+}
+
+.text a {
+  color: var(--vscode-textLink-foreground);
+  text-decoration: none;
+}
+
+.text a:hover {
+  text-decoration: underline;
+}
+
+/* Separator between messages */
+.message + .message {
+  padding-top: var(--message-gap);
+  border-top: 1px solid var(--vscode-panel-border);
 }
