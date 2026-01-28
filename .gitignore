@@ -1,9 +1,20 @@
+# Python
 __pycache__/
 *.pyc
 *.egg-info/
 dist/
 build/
 .pytest_cache/
+
+# Node/VSCode extension
 node_modules/
 out/
 *.vsix
+package-lock.json
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
