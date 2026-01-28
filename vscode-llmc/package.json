@@ -1,8 +1,8 @@
 {
   "name": "vscode-llmc",
   "displayName": "LLMC File Viewer",
-  "description": "Syntax highlighting and rendered chat preview for .llmc files",
-  "version": "0.1.0",
+  "description": "View and edit LLM chat conversations with thinking tokens and tool calls. Supports DeepSeek, Qwen, Claude formats.",
+  "version": "0.2.0",
   "publisher": "sreeramajay",
   "repository": {
     "type": "git",
@@ -11,7 +11,8 @@
   "engines": {
     "vscode": "^1.80.0"
   },
-  "categories": ["Programming Languages"],
+  "categories": ["Programming Languages", "Visualization"],
+  "keywords": ["llm", "chat", "deepseek", "qwen", "claude", "thinking", "reasoning", "tool-use"],
   "activationEvents": [
     "onLanguage:llmc"
   ],

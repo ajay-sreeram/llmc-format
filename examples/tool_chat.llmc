@@ -1,0 +1,60 @@
+---
+model: claude-opus-4-5-20251101
+timestamp: 2026-01-28T10:00:00Z
+---
+
+## system
+
+You are a helpful assistant with access to tools.
+
+## user
+
+What's the weather in San Francisco and calculate 15 + 27?
+
+## assistant
+
+<think>
+The user wants two things:
+1. Weather information for San Francisco
+2. A simple calculation: 15 + 27
+
+Let me use both tools. For the calculation:
+
+```python
+result = 15 + 27  # = 42
+```
+
+I'll call both tools to get the information.
+</think>
+
+I'll help you with both requests.
+
+<tool_use id="toolu_01" name="get_weather">
+{"location": "San Francisco, CA", "unit": "fahrenheit"}
+</tool_use>
+
+<tool_use id="toolu_02" name="calculator">
+{"expression": "15 + 27"}
+</tool_use>
+
+## user
+
+<tool_result id="toolu_01">
+{"temperature": 68, "condition": "partly cloudy", "humidity": 65}
+</tool_result>
+
+<tool_result id="toolu_02">
+{"result": 42}
+</tool_result>
+
+## assistant
+
+Here are the results:
+
+**San Francisco Weather:**
+- Temperature: 68°F
+- Condition: Partly cloudy
+- Humidity: 65%
+
+**Calculation:**
+15 + 27 = **42**

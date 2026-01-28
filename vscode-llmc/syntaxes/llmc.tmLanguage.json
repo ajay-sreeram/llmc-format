@@ -4,6 +4,9 @@
   "patterns": [
     { "include": "#frontmatter" },
     { "include": "#role-header" },
+    { "include": "#thinking-xml" },
+    { "include": "#tool-use-xml" },
+    { "include": "#tool-result-xml" },
     { "include": "#thinking-block" },
     { "include": "#tool-use-block" },
     { "include": "#tool-result-block" },
@@ -27,6 +30,64 @@
         "1": { "name": "punctuation.definition.heading.llmc" },
         "2": { "name": "entity.name.type.role.llmc" }
       }
+    },
+    "thinking-xml": {
+      "name": "meta.embedded.block.thinking.llmc",
+      "begin": "^(<)(think|thinking)(>)\\s*$",
+      "end": "^(</)(think|thinking)(>)\\s*$",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.llmc" },
+        "2": { "name": "entity.name.tag.thinking.llmc" },
+        "3": { "name": "punctuation.definition.tag.end.llmc" }
+      },
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.llmc" },
+        "2": { "name": "entity.name.tag.thinking.llmc" },
+        "3": { "name": "punctuation.definition.tag.end.llmc" }
+      },
+      "patterns": [
+        { "include": "text.html.markdown" }
+      ]
+    },
+    "tool-use-xml": {
+      "name": "meta.embedded.block.tool-use.llmc",
+      "begin": "^(<)(tool_use)(?:\\s+(id|name)=(\"[^\"]*\"|'[^']*'))*\\s*(>)\\s*$",
+      "end": "^(</)(tool_use)(>)\\s*$",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.llmc" },
+        "2": { "name": "entity.name.tag.tool-use.llmc" },
+        "3": { "name": "entity.other.attribute-name.llmc" },
+        "4": { "name": "string.quoted.llmc" },
+        "5": { "name": "punctuation.definition.tag.end.llmc" }
+      },
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.llmc" },
+        "2": { "name": "entity.name.tag.tool-use.llmc" },
+        "3": { "name": "punctuation.definition.tag.end.llmc" }
+      },
+      "patterns": [
+        { "include": "source.json" }
+      ]
+    },
+    "tool-result-xml": {
+      "name": "meta.embedded.block.tool-result.llmc",
+      "begin": "^(<)(tool_result)(?:\\s+(id|is_error)=(\"[^\"]*\"|'[^']*'))*\\s*(>)\\s*$",
+      "end": "^(</)(tool_result)(>)\\s*$",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.llmc" },
+        "2": { "name": "entity.name.tag.tool-result.llmc" },
+        "3": { "name": "entity.other.attribute-name.llmc" },
+        "4": { "name": "string.quoted.llmc" },
+        "5": { "name": "punctuation.definition.tag.end.llmc" }
+      },
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.llmc" },
+        "2": { "name": "entity.name.tag.tool-result.llmc" },
+        "3": { "name": "punctuation.definition.tag.end.llmc" }
+      },
+      "patterns": [
+        { "include": "source.json" }
+      ]
     },
     "thinking-block": {
       "name": "meta.embedded.block.thinking.llmc",

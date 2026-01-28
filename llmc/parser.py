@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from typing import Optional
 
 import yaml
 
@@ -16,8 +17,27 @@ from .models import (
 )
 
 _HEADER_RE = re.compile(r"^## (system|user|assistant)\s*$")
+
+# Legacy fence patterns (backward compatibility)
 _FENCE_OPEN_RE = re.compile(r"^```(thinking|tool_use|tool_result)\s*$")
 _FENCE_CLOSE_RE = re.compile(r"^```\s*$")
+
+# XML-style tag patterns (primary format)
+# Thinking: <think> or <thinking>
+_THINK_OPEN_RE = re.compile(r"^<(think|thinking)>\s*$")
+_THINK_CLOSE_RE = re.compile(r"^</(think|thinking)>\s*$")
+
+# Tool use: <tool_use id="..." name="...">
+_TOOL_USE_OPEN_RE = re.compile(
+    r'^<tool_use(?:\s+id=["\']([^"\']*)["\'])?(?:\s+name=["\']([^"\']*)["\'])?\s*>\s*$'
+)
+_TOOL_USE_CLOSE_RE = re.compile(r"^</tool_use>\s*$")
+
+# Tool result: <tool_result id="..." is_error="true">
+_TOOL_RESULT_OPEN_RE = re.compile(
+    r'^<tool_result(?:\s+id=["\']([^"\']*)["\'])?(?:\s+is_error=["\']([^"\']*)["\'])?\s*>\s*$'
+)
+_TOOL_RESULT_CLOSE_RE = re.compile(r"^</tool_result>\s*$")
 
 
 def parse(text: str) -> Chat:
@@ -65,11 +85,18 @@ def parse_file(path: str | Path) -> Chat:
 
 
 def _parse_blocks(lines: list[str]) -> list[Block]:
-    """Parse message body lines into a sequence of blocks."""
+    """Parse message body lines into a sequence of blocks.
+
+    Supports both XML-style tags (primary) and legacy fenced blocks (backward compat).
+    """
     blocks: list[Block] = []
     text_lines: list[str] = []
-    fence_type: str | None = None
-    fence_lines: list[str] = []
+
+    # State for block parsing
+    block_type: str | None = None  # 'thinking', 'tool_use', 'tool_result'
+    block_style: str | None = None  # 'xml' or 'fence'
+    block_lines: list[str] = []
+    block_attrs: dict[str, Optional[str]] = {}
 
     def flush_text():
         content = "\n".join(text_lines).strip()
@@ -77,28 +104,107 @@ def _parse_blocks(lines: list[str]) -> list[Block]:
             blocks.append(ContentBlock(text=content))
         text_lines.clear()
 
-    for line in lines:
-        if fence_type is None:
+    def create_block(btype: str, content: str, attrs: dict) -> Block:
+        """Create the appropriate block type with attributes."""
+        if btype == "thinking":
+            return ThinkingBlock(text=content)
+        elif btype == "tool_use":
+            return ToolUseBlock(
+                text=content,
+                id=attrs.get("id"),
+                name=attrs.get("name"),
+            )
+        elif btype == "tool_result":
+            is_error_val = attrs.get("is_error") or ""
+            return ToolResultBlock(
+                text=content,
+                id=attrs.get("id"),
+                is_error=is_error_val.lower() == "true",
+            )
+        else:
+            return ContentBlock(text=content)
+
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+
+        if block_type is None:
+            # Not inside a block - check for opening tags/fences
+
+            # Check XML-style thinking tag
+            m = _THINK_OPEN_RE.match(line)
+            if m:
+                flush_text()
+                block_type = "thinking"
+                block_style = "xml"
+                block_lines = []
+                block_attrs = {}
+                i += 1
+                continue
+
+            # Check XML-style tool_use tag
+            m = _TOOL_USE_OPEN_RE.match(line)
+            if m:
+                flush_text()
+                block_type = "tool_use"
+                block_style = "xml"
+                block_lines = []
+                block_attrs = {"id": m.group(1), "name": m.group(2)}
+                i += 1
+                continue
+
+            # Check XML-style tool_result tag
+            m = _TOOL_RESULT_OPEN_RE.match(line)
+            if m:
+                flush_text()
+                block_type = "tool_result"
+                block_style = "xml"
+                block_lines = []
+                block_attrs = {"id": m.group(1), "is_error": m.group(2)}
+                i += 1
+                continue
+
+            # Check legacy fence opening
             m = _FENCE_OPEN_RE.match(line)
             if m:
                 flush_text()
-                fence_type = m.group(1)
-                fence_lines = []
-            else:
-                text_lines.append(line)
+                block_type = m.group(1)
+                block_style = "fence"
+                block_lines = []
+                block_attrs = {}
+                i += 1
+                continue
+
+            # Regular text line
+            text_lines.append(line)
+            i += 1
+
         else:
-            if _FENCE_CLOSE_RE.match(line):
-                content = "\n".join(fence_lines)
-                if fence_type == "thinking":
-                    blocks.append(ThinkingBlock(text=content))
-                elif fence_type == "tool_use":
-                    blocks.append(ToolUseBlock(text=content))
-                elif fence_type == "tool_result":
-                    blocks.append(ToolResultBlock(text=content))
-                fence_type = None
-                fence_lines = []
+            # Inside a block - look for closing tag/fence
+            closed = False
+
+            if block_style == "xml":
+                if block_type == "thinking" and _THINK_CLOSE_RE.match(line):
+                    closed = True
+                elif block_type == "tool_use" and _TOOL_USE_CLOSE_RE.match(line):
+                    closed = True
+                elif block_type == "tool_result" and _TOOL_RESULT_CLOSE_RE.match(line):
+                    closed = True
+            elif block_style == "fence":
+                if _FENCE_CLOSE_RE.match(line):
+                    closed = True
+
+            if closed:
+                content = "\n".join(block_lines)
+                blocks.append(create_block(block_type, content, block_attrs))
+                block_type = None
+                block_style = None
+                block_lines = []
+                block_attrs = {}
             else:
-                fence_lines.append(line)
+                block_lines.append(line)
+
+            i += 1
 
     # Remaining text
     flush_text()

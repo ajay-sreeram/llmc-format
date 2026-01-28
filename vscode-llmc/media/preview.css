@@ -50,6 +50,7 @@ body {
   padding: 10px 12px;
 }
 
+/* Thinking blocks */
 .thinking-block {
   border: 1px dashed var(--vscode-editorInfo-foreground);
   border-radius: 4px;
@@ -63,34 +64,82 @@ body {
   font-style: italic;
   opacity: 0.7;
   font-size: 0.9em;
+  background: var(--vscode-textBlockQuote-background);
 }
 
 .thinking-block .thinking-content {
   padding: 8px 10px;
-  white-space: pre-wrap;
-  font-style: italic;
-  opacity: 0.8;
+  opacity: 0.85;
   border-top: 1px dashed var(--vscode-editorInfo-foreground);
+  background: var(--vscode-textBlockQuote-background);
 }
 
+/* Allow markdown rendering inside thinking */
+.thinking-block .thinking-content pre {
+  margin: 8px 0;
+}
+
+.thinking-block .thinking-content code {
+  font-size: 0.9em;
+}
+
+/* Tool blocks */
 .tool-block {
   background: var(--vscode-textCodeBlock-background);
   border-radius: 4px;
   margin: 8px 0;
+  overflow: hidden;
+}
+
+.tool-block .tool-label {
+  font-weight: bold;
+  padding: 6px 10px;
+  background: rgba(128, 128, 128, 0.1);
+  border-bottom: 1px solid var(--vscode-panel-border);
+  font-size: 0.85em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-block .tool-id {
+  font-weight: normal;
+  opacity: 0.6;
+  font-size: 0.9em;
+  font-family: var(--vscode-editor-fontFamily);
+}
+
+.tool-block pre {
+  margin: 0;
   padding: 8px 10px;
   font-family: var(--vscode-editor-fontFamily);
   font-size: 0.9em;
   white-space: pre-wrap;
   overflow-x: auto;
+  background: transparent;
 }
 
-.tool-block .tool-label {
-  font-weight: bold;
-  margin-bottom: 4px;
-  opacity: 0.7;
-  font-size: 0.85em;
+/* Tool use styling */
+.tool-use .tool-label {
+  color: var(--vscode-editorInfo-foreground);
 }
 
+/* Tool result styling */
+.tool-result .tool-label {
+  color: var(--vscode-editorHint-foreground, var(--vscode-foreground));
+}
+
+/* Tool error styling */
+.tool-error {
+  border: 1px solid var(--vscode-editorError-foreground);
+}
+
+.tool-error .tool-label {
+  color: var(--vscode-editorError-foreground);
+  background: rgba(255, 0, 0, 0.1);
+}
+
+/* Standard code styling */
 code {
   background: var(--vscode-textCodeBlock-background);
   padding: 1px 4px;

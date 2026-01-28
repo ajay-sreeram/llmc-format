@@ -17,9 +17,20 @@ def cmd_validate(args: argparse.Namespace) -> int:
         return 1
     n = len(chat.messages)
     print(f"Valid .llmc file: {n} message{'s' if n != 1 else ''}")
+    if chat.metadata:
+        print(f"  metadata: {list(chat.metadata.keys())}")
     for msg in chat.messages:
-        block_types = [b.type for b in msg.blocks]
-        print(f"  {msg.role}: {block_types}")
+        block_info = []
+        for b in msg.blocks:
+            if b.type == "tool_use":
+                label = f"tool_use({b.name})" if b.name else "tool_use"
+                block_info.append(label)
+            elif b.type == "tool_result":
+                label = "tool_error" if b.is_error else "tool_result"
+                block_info.append(label)
+            else:
+                block_info.append(b.type)
+        print(f"  {msg.role}: {block_info}")
     return 0
 
 
