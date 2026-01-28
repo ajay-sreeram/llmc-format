@@ -2,7 +2,7 @@
   "name": "vscode-llmc",
   "displayName": "LLMC File Viewer",
   "description": "View and edit LLM chat conversations with thinking tokens and tool calls. Supports DeepSeek, Qwen, Claude formats.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "publisher": "sreeramajay",
   "repository": {
     "type": "git",
